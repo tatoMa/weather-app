@@ -9,21 +9,18 @@
 </template>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
+$color-main-background: #222;
+$color-snow-cloud: #CCC;
+$color-cloud: #00A0B0;
+
+body {
+  background-color: $color-main-background;
+  min-width: 500px;
+  font-family: 'Poppins', sans-serif;
+  color: $color-snow-cloud;
   a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+    text-decoration: none;
+    color: $color-cloud;
   }
 }
 </style>
