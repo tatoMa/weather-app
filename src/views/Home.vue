@@ -5,7 +5,7 @@
     <button v-on:click="searchCity">SEARCH</button>
     <div v-if="search">
       <div v-for="city in search" :key="city.woeid">
-        <div v-on:click="selectCity(city.woeid)">
+        <div v-on:click="WeatherDataFromCity(city.woeid)">
           {{city.title}}
         </div>
       </div>
@@ -54,8 +54,8 @@ export default {
     };
   },
   async mounted() {
-    this.selectCity('Melbourne');
-    this.searchCity();
+    this.WeatherDataFromCity(1103816);
+    // this.searchCity();
   },
   methods: {
     async searchCity() {
@@ -66,8 +66,8 @@ export default {
             this.search = res;
           }));
     },
-    async selectCity(selectCity) {
-      const result = await fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${selectCity}/`)
+    async WeatherDataFromCity(WeatherDataFromCity) {
+      const result = await fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${WeatherDataFromCity}/`)
         .then(data => data.json()
           .then((res) => {
             console.log(res);

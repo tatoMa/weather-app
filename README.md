@@ -1,10 +1,19 @@
 # weather-app
 
-## A weather app with contemporary icons inspired by Tuan Hoang ![link](https://codepen.io/code4food/pen/rLvggd?editors=1100)
+## A weather app with contemporary icons inspired by Tuan Hoang [link](https://codepen.io/code4food/pen/rLvggd?editors=1100)
 
 * [x] init the vue project with router, vuex, scss, eslint and webpack by vuecli tool
 * [x] put all svg icons of weather conditions into app
 * [x] modify the css and html with vue style
+* [x] add a open weather info api into app
+* [x] add the search city function
+* [x] add the forecast weather info for 5 days from city clicked via search city function
+* [ ] css for city
+* [ ] css for weather
+* [ ] css for animation and transition
+* [ ] add sidebar
+* [ ] add router
+...
 
 ## Project setup
 ```
