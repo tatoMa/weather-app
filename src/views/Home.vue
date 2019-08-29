@@ -1,12 +1,12 @@
 <template>
   <div>
-    <section class="hero is-fullheight is-info" v-bind:style="{ backgroundImage: 'url(' + imageCityURL.large2x + ')' }">
+    <section class="hero is-fullheight is-dark" v-bind:style="{ backgroundImage: 'url(' + imageCityURL.large2x + ')' }">
       <div class="hero-head">
         <nav class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
-                <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
+                <p class="title is-4">weather</p>
               </a>
               <span class="navbar-burger burger" data-target="navbarMenuHeroB">
                 <span></span>
@@ -38,49 +38,72 @@
           </div>
         </nav>
       </div>
-
+      <!-- body section -->
       <div class="hero-body">
         <div class="container has-text-centered">
           <div class="field has-addons">
           <div class="control is-expanded">
-            <input class="input" type="text" placeholder="Find a repository">
+            <input
+            class="input"
+            type="text"
+            placeholder="search a place"
+            v-model="searchText"
+            @keyup.enter="searchCity"
+            >
           </div>
           <div class="control">
-            <a class="button is-info">
+            <a class="button is-info" @click="searchCity">
               Search
             </a>
           </div>
         </div>
-          <div v-if="result">
-            <p class="title" >
-              {{Math.round(result.consolidated_weather[0].the_temp)}}
+        <nav class="panel" v-if="search">
+          <a class="panel-block"
+          v-for="city in search"
+          :key="city.woeid"
+          v-on:click="weatherDataFromCity(city)"
+          >
+            {{city.title}}
+          </a>
+        </nav>
+        <!-- <div v-if="search">
+          <div v-for="city in search" :key="city.woeid">
+            <div v-on:click="weatherDataFromCity(city)">
+              {{city.title}}
+            </div>
+          </div>
+        </div> -->
+          <div v-if="result.consolidated_weather" class="main-info">
+            <p class="title is-2">
+              {{Math.round(result.consolidated_weather[0].the_temp)}}°C
             </p>
-            <p class="subtitle">
+            <p class="subtitle is-4">
               {{result.title}}
             </p>
           </div>
         </div>
       </div>
-
-      <div class="hero-foot">
+      <!-- footer section -->
+      <div class="hero-foot bottom-info">
         <nav class="tabs is-boxed is-fullwidth">
           <div class="container">
             <ul>
               <!-- <li class="is-active"> -->
-              <li v-for="daily in result.consolidated_weather" :key="daily.applicable_date.id">
-                <a>
+              <li
+              v-for="daily in result.consolidated_weather"
+              :key="daily.applicable_date.id"
+              class="daily-info"
+              >
+                <div class="has-text-black-bis subtitle is-6">
+                  <div>
+                    {{new Date(daily.applicable_date).getDate()}}
+                  </div>
                   <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
-
-                  {{new Date(daily.applicable_date).getMonth()+1}} -
-                  {{new Date(daily.applicable_date).getDate()}}
-                  <br>
-                  {{daily.weather_state_name}}
-                  {{Math.round(daily.the_temp)}}°C
-                  <br>
-                  wind:
-                  {{daily.wind_speed.toFixed(2)}} mph
-                  {{daily.wind_direction.toFixed(0)}}°
-                </a>
+                  <div>
+                    {{Math.round(daily.min_temp)}}°C -
+                    {{Math.round(daily.max_temp)}}°C
+                  </div>
+                </div>
               </li>
             </ul>
           </div>
@@ -94,7 +117,7 @@
     <button v-on:click="searchCity">SEARCH</button>
     <div v-if="search">
       <div v-for="city in search" :key="city.woeid">
-        <div v-on:click="weatherDataFromCity(city.woeid)">
+        <div v-on:click="weatherDataFromCity(city)">
           {{city.title}}
         </div>
       </div>
@@ -108,18 +131,23 @@
     <hr>
     <!-- {{result.consolidated_weather}} -->
       <div v-for="daily in result.consolidated_weather" :key="daily.applicable_date.id">
-        {{new Date(daily.applicable_date).getMonth()+1}} -
-        {{new Date(daily.applicable_date).getDate()}}
-        {{daily.weather_state_name}}
-        {{Math.round(daily.the_temp)}}
-        <br>
+        <div>
+          <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
+        </div>
+        <div>
+          {{new Date(daily.applicable_date).getMonth()+1}} -
+          {{new Date(daily.applicable_date).getDate()}}
+        </div>
+        <div>
+          {{daily.weather_state_name}}
+          {{Math.round(daily.the_temp)}}
+        </div>
+        <div>
         wind:
         <br>
         {{daily.wind_speed.toFixed(2)}} mph
         {{daily.wind_direction.toFixed(0)}} degrees
-        <br>
-        <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
-        <hr>
+        </div>
       </div>
     </div>
   </div>
@@ -127,6 +155,7 @@
 
 <script>
 // @ is an alias to /src
+import { createHash } from 'crypto';
 import Weather from '@/components/Weather.vue';
 
 export default {
@@ -143,9 +172,9 @@ export default {
       imageCityURL: '',
     };
   },
-  async mounted() {
-    this.weatherDataFromCity(1103816);
-    this.cityImageFetchByPexels();
+  mounted() {
+    this.weatherDataFromCity({ woeid: 1103816 });
+    this.cityImageFetchByPexels('melbourne');
     // this.searchCity();
   },
   methods: {
@@ -157,16 +186,20 @@ export default {
             this.search = res;
           }));
     },
-    async weatherDataFromCity(WeatherDataFromCity) {
-      const result = await fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${WeatherDataFromCity}/`)
+    weatherDataFromCity(WeatherDataFromCity) {
+      this.search = {};
+      console.log(WeatherDataFromCity);
+      const { woeid, title } = WeatherDataFromCity;
+      fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${woeid}/`)
         .then(data => data.json()
           .then((res) => {
             console.log(res);
             this.result = res;
+            this.cityImageFetchByPexels(title);
           }));
     },
-    async cityImageFetchByPexels() {
-      await fetch('https://api.pexels.com/v1/search?query=melbourne+query&per_page=1', {
+    cityImageFetchByPexels(locationName) {
+      fetch(`https://api.pexels.com/v1/search?query=${locationName}+query&per_page=1`, {
         headers: {
           Authorization: 'Bearer ' + '563492ad6f91700001000001caff54fbc73040acae2be7c403e3e8d8',
           // 'Content-Type': 'application/json',
@@ -181,8 +214,12 @@ export default {
             }
             // Examine the text in the response
             response.json().then((data) => {
-              this.imageCityURL = data.photos[0].src;
+              console.log('src');
               console.log(data.photos[0].src);
+              if (data.photos[0].src) {
+                this.imageCityURL = data.photos[0].src;
+                console.log(data.photos[0].src);
+              }
             });
           },
         )
@@ -196,15 +233,32 @@ export default {
 
 <style lang="scss" scoped>
 .icon{
-  width: 50px;
+  width: 30px;
   height: auto;
-  position: absolute;
-  z-index: 10;
-  transform: translate(0,- 100%)
+  margin: 6px 0px;
 }
 .hero {
   background-color: rgba(88, 88, 88, 0.61);
   background-size: cover;
   background-position: bottom;
+}
+.main-info, .hero-head{
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.bottom-info{
+  background-color: white;
+  cursor: pointer;
+}
+.daily-info{
+  padding: 12px 0px;
+}
+.daily-info:hover{
+  background-color: rgb(211, 211, 211);
+}
+.panel-block{
+  background-color: white;
+  &:hover{
+    background-color: rgb(211, 211, 211);
+  }
 }
 </style>
