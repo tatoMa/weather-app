@@ -4,7 +4,7 @@
     class="hero is-fullheight is-dark"
     v-bind:style="{
       // eslint-disable-next-line max-len
-      backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 5%,rgba(0,0,0,0) 100%), url(' + imageCityURL.large2x + ')' }"
+      backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 10%,rgba(0,0,0,0) 100%), url(' + imageCityURL.large2x + ')' }"
     >
 
       <!-- navbar -->
@@ -51,22 +51,22 @@
         <div class="container has-text-centered">
 
           <!-- location and weather info for top section -->
-          <div v-if="result.consolidated_weather" class="main-info city-name">
+          <div v-if="weatherDataByCitySelected.consolidated_weather" class="main-info city-name">
             <div class="subtitle is-5">
-              {{getWeekDayText(result.consolidated_weather[0].applicable_date)}},
-              {{new Date(result.consolidated_weather[0].applicable_date).getDate()}}
-              {{getMonthText(result.consolidated_weather[0].applicable_date)}}
+              {{getWeekDayText(weatherDataByCitySelected.consolidated_weather[0].applicable_date)}},
+              {{new Date(weatherDataByCitySelected.consolidated_weather[0].applicable_date).getDate()}}
+              {{getMonthText(weatherDataByCitySelected.consolidated_weather[0].applicable_date)}}
             </div>
             <p class="title is-4">
-              {{result.title}}
+              {{weatherDataByCitySelected.title}}
             </p>
             <div class="temp-toggle">
               <div class="field">
                 <b-switch
-                v-model="tempUnit"
+                v-model="isTempUnitCalcius"
                 type="is-info"
                 >
-                    {{tempUnit? '°C' : '°F'}}
+                    {{isTempUnitCalcius? '°C' : '°F'}}
                 </b-switch>
               </div>
             </div>
@@ -76,55 +76,55 @@
           <div class="field has-addons">
             <div
             class="control is-expanded"
-            :class="loadingSearchCity ? 'is-loading' : ''"
+            :class="loadingCityList ? 'is-loading' : ''"
             >
               <input
               class="input"
               type="text"
-              placeholder="search a place"
-              v-model="searchText"
+              placeholder="Search a city"
+              v-model="cityNameByInput"
               @keyup.enter="searchCity"
               >
             </div>
             <div
             class="control"
-            :class="loadingSearchCity ? 'is-loading' : ''"
+            :class="loadingCityList ? 'is-loading' : ''"
             >
               <a
               class="button is-info"
               @click="searchCity"
-              :disabled="loadingSearchCity ? true : false"
+              :disabled="loadingCityList ? true : false"
               >
                 Search
               </a>
             </div>
           </div><!-- search input and button -->
 
-          <!-- search result panel -->
-          <nav class="panel" v-if="search">
+          <!-- search weatherDataByCitySelected panel -->
+          <nav class="panel" v-if="cityListBySearch">
             <a class="panel-block"
-            v-for="city in search"
+            v-for="city in cityListBySearch"
             :key="city.woeid"
             v-on:click="weatherDataFromCity(city)"
             >
               {{city.title}}
             </a>
-          </nav><!-- search result panel -->
+          </nav><!-- search weatherDataByCitySelected panel -->
 
-          <!-- weather info from result -->
-          <div v-if="result.consolidated_weather" class="main-info">
+          <!-- weather info from weatherDataByCitySelected -->
+          <div v-if="weatherDataByCitySelected.consolidated_weather" class="main-info">
             <p class="title is-1">
               {{
-                tempUnit?
-                Math.round(result.consolidated_weather[0].the_temp)
-                : (Math.round(result.consolidated_weather[0].the_temp * 9/5 + 32))
+                isTempUnitCalcius?
+                Math.round(weatherDataByCitySelected.consolidated_weather[0].the_temp)
+                : (Math.round(weatherDataByCitySelected.consolidated_weather[0].the_temp * 9/5 + 32))
               }}
-              {{tempUnit? '°C' : '°F'}}
+              {{isTempUnitCalcius? '°C' : '°F'}}
             </p>
             <p class="subtitle is-3">
-              {{result.consolidated_weather[0].weather_state_name}}
+              {{weatherDataByCitySelected.consolidated_weather[0].weather_state_name}}
             </p>
-          </div><!-- weather info from result -->
+          </div><!-- weather info from weatherDataByCitySelected -->
 
         </div>
       </div><!-- body section -->
@@ -138,10 +138,10 @@
             <ul>
               <!-- <li class="is-active"> -->
               <li
-              v-for="daily in result.consolidated_weather"
+              v-for="daily in weatherDataByCitySelected.consolidated_weather"
               :key="daily.applicable_date.id"
               class="daily-info"
-              @click="isCardModalActive = true"
+              @click="dailyWeatherDetailPopup = true"
               >
                 <div class="has-text-black-bis subtitle is-6">
                   <div class="has-text-weight-semibold">
@@ -152,11 +152,11 @@
                     <!-- {{Math.round(daily.min_temp)}}°C - -->
                     <!-- {{Math.round(daily.max_temp)}}°C -->
                     {{
-                      tempUnit?
+                      isTempUnitCalcius?
                       Math.round(daily.max_temp)
                       : (Math.round(daily.max_temp * 9/5 + 32))
                     }}
-                    {{tempUnit? '°C' : '°F'}}
+                    {{isTempUnitCalcius? '°C' : '°F'}}
                   </div>
                 </div>
               </li>
@@ -164,7 +164,7 @@
           </div><!-- 6 days of weather forcast -->
 
           <!-- card for daily weather info -->
-          <b-modal :active.sync="isCardModalActive" :width="640" scroll="keep">
+          <b-modal :active.sync="dailyWeatherDetailPopup" :width="640" scroll="keep">
             <div class="card">
                 <div class="card-content">
 
@@ -189,8 +189,8 @@
     </section>
     <!-- {{imageCityURL.original}} -->
     <!-- <img v-if="imageCityURL" :src="imageCityURL.large2x" alt=""> -->
-    {{searchText}}
-    <input v-model="searchText">
+    <!-- {{cityNameByInput}}
+    <input v-model="cityNameByInput">
     <button v-on:click="searchCity">SEARCH</button>
     <div v-if="search">
       <div v-for="city in search" :key="city.woeid">
@@ -199,15 +199,15 @@
         </div>
       </div>
     </div>
-    <br>
+    <br> -->
     <!-- <Weather/> -->
-    <div v-if="result">
-    {{result.title}}
-    {{new Date(result.time).getMonth()+1}} -
-    {{new Date(result.time).getDate()}}
-    <hr>
-    <!-- {{result.consolidated_weather}} -->
-      <div v-for="daily in result.consolidated_weather" :key="daily.applicable_date.id">
+    <!-- <div v-if="weatherDataByCitySelected">
+    {{weatherDataByCitySelected.title}}
+    {{new Date(weatherDataByCitySelected.time).getMonth()+1}} -
+    {{new Date(weatherDataByCitySelected.time).getDate()}}
+    <hr> -->
+    <!-- {{weatherDataByCitySelected.consolidated_weather}} -->
+      <!-- <div v-for="daily in weatherDataByCitySelected.consolidated_weather" :key="daily.applicable_date.id">
         <div>
           <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
         </div>
@@ -226,7 +226,7 @@
         {{daily.wind_direction.toFixed(0)}} degrees
         </div>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -242,45 +242,44 @@ export default {
   },
   data() {
     return {
-      isCardModalActive: false,
-      tempUnit: true,
-      result: {},
-      search: {},
-      searchText: '',
-      resultCity: '',
+      dailyWeatherDetailPopup: false,
+      isTempUnitCalcius: true,
+      weatherDataByCitySelected: {},
+      cityListBySearch: {},
+      cityNameByInput: '',
       imageCityURL: '',
-      loadingSearchCity: '',
+      loadingCityList: false,
     };
   },
   created() {
     this.weatherDataFromCity({ woeid: 1103816 });
-    this.cityImageFetchByPexels('melbourne');
+    // this.cityImageFetchByPexels('melbourne');
     // this.searchCity();
   },
   methods: {
     searchCity() {
-      this.loadingSearchCity = true;
-      fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/search/?query=${this.searchText}`)
+      this.loadingCityList = true;
+      fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/search/?query=${this.cityNameByInput}`)
         .then(data => data.json()
           .then((res) => {
             console.log(res);
-            this.search = res;
-            this.loadingSearchCity = false;
+            this.cityListBySearch = res;
+            this.loadingCityList = false;
           }));
     },
     weatherDataFromCity(WeatherDataFromCity) {
-      this.loadingSearchCity = true;
-      this.search = {};
-      this.searchText = '';
+      this.loadingCityList = true;
+      this.cityListBySearch = {};
+      this.cityNameByInput = '';
       console.log(WeatherDataFromCity);
-      const { woeid, title } = WeatherDataFromCity;
+      const { woeid } = WeatherDataFromCity;
       fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${woeid}/`)
         .then(data => data.json()
           .then((res) => {
             console.log(res);
-            this.result = res;
-            this.cityImageFetchByPexels(title);
-            this.loadingSearchCity = false;
+            this.weatherDataByCitySelected = res;
+            this.cityImageFetchByPexels(res.title);
+            this.loadingCityList = false;
           }));
     },
     cityImageFetchByPexels(locationName) {
@@ -345,19 +344,25 @@ export default {
 .hero-body{
   // align-items:flex-start!important;
 }
-.main-info, .hero-head{
+.hero-head{
   background-color: rgba(0, 0, 0, 0.5);
+}
+.main-info{
+  text-shadow: 2px 2px 0 rgba(63, 63, 63, 0.5);
+  padding-top: 10vh;
 }
 .city-name{
   // margin-bottom: 20vh;
   background-color: rgba(0, 0, 0, 0.0);
   position: relative;
   top: -20vh;
+  color: #FFFFFF;
+  text-shadow: 3px 2px 0 rgb(90, 90, 90);
 }
 .temp-toggle{
   position: absolute;
-  right: 1.5vh;
-  top: 2.5vh;
+  right: 0.5vh;
+  top: 12vh;
 }
 .bottom-info{
   background-color: white;
@@ -366,6 +371,9 @@ export default {
 .daily-info{
   padding: 12px 0px;
   color:rgb(30, 40, 50);
+}
+.daily-info:first-child {
+  // background-color: rgb(223, 223, 223);
 }
 .daily-info:hover{
   background-color: rgb(211, 211, 211);

@@ -15,7 +15,6 @@ $color-cloud: #00A0B0;
 
 body {
   background-color: $color-main-background;
-  min-width: 500px;
   font-family: 'Poppins', sans-serif;
   color: $color-snow-cloud;
   a {
