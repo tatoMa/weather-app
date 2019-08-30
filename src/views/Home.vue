@@ -252,7 +252,7 @@ export default {
     };
   },
   created() {
-    this.weatherDataFromCity({ woeid: 1103816 });
+    this.weatherDataFromCity({ woeid: 1105779 });
     // this.cityImageFetchByPexels('melbourne');
     // this.searchCity();
   },
