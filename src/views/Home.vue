@@ -2,7 +2,9 @@
   <div>
     <section
     class="hero is-fullheight is-dark"
-    v-bind:style="{ backgroundImage: 'url(' + imageCityURL.large2x + ')' }"
+    v-bind:style="{
+      // eslint-disable-next-line max-len
+      backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 5%,rgba(0,0,0,0) 100%), url(' + imageCityURL.large2x + ')' }"
     >
 
       <!-- navbar -->
@@ -48,6 +50,18 @@
       <div class="hero-body">
         <div class="container has-text-centered">
 
+          <!-- location and weather info for top section -->
+          <div v-if="result.consolidated_weather" class="main-info city-name">
+            <div class="subtitle is-5">
+              {{getWeekDayText(result.consolidated_weather[0].applicable_date)}},
+              {{new Date(result.consolidated_weather[0].applicable_date).getDate()}}
+              {{getMonthText(result.consolidated_weather[0].applicable_date)}}
+            </div>
+            <p class="title is-4">
+              {{result.title}}
+            </p>
+          </div><!-- location and weather info for top section -->
+
           <!-- search input and button -->
           <div class="field has-addons">
             <div class="control is-expanded">
@@ -57,10 +71,14 @@
               placeholder="search a place"
               v-model="searchText"
               @keyup.enter="searchCity"
+              :disabled="loadingSearchCity ? true : false"
               >
             </div>
             <div class="control">
-              <a class="button is-info" @click="searchCity">
+              <a
+              class="button is-info"
+              @click="searchCity"
+              :class="loadingSearchCity ? 'is-loading' : ''">
                 Search
               </a>
             </div>
@@ -79,11 +97,11 @@
 
           <!-- weather info from result -->
           <div v-if="result.consolidated_weather" class="main-info">
-            <p class="title is-2">
+            <p class="title is-1">
               {{Math.round(result.consolidated_weather[0].the_temp)}}°C
             </p>
-            <p class="subtitle is-4">
-              {{result.title}}
+            <p class="subtitle is-3">
+              {{result.consolidated_weather[0].weather_state_name}}
             </p>
           </div><!-- weather info from result -->
 
@@ -104,8 +122,8 @@
               class="daily-info"
               >
                 <div class="has-text-black-bis subtitle is-6">
-                  <div>
-                    {{getWeekDay(daily.applicable_date)}}
+                  <div class="has-text-weight-semibold">
+                    {{getWeekDayText(daily.applicable_date).slice(0, 3)}}
                   </div>
                   <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
                   <div>
@@ -182,6 +200,7 @@ export default {
       searchText: '',
       resultCity: '',
       imageCityURL: '',
+      loadingSearchCity: '',
     };
   },
   mounted() {
@@ -191,11 +210,13 @@ export default {
   },
   methods: {
     searchCity() {
+      this.loadingSearchCity = true;
       fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/search/?query=${this.searchText}`)
         .then(data => data.json()
           .then((res) => {
             console.log(res);
             this.search = res;
+            this.loadingSearchCity = false;
           }));
     },
     weatherDataFromCity(WeatherDataFromCity) {
@@ -239,18 +260,15 @@ export default {
           console.log('Fetch Error :-S', err);
         });
     },
-    getWeekDay(day) {
+    getWeekDayText(day) {
       const weekDay = new Date(day).getDay();
-      const week = new Array(7);
-      week[0] = 'Sunday';
-      week[1] = 'Monday';
-      week[2] = 'Tuesday';
-      week[3] = 'Wednesday';
-      week[4] = 'Thursday';
-      week[5] = 'Friday';
-      week[6] = 'Saturday';
-
-      return week[weekDay];
+      const weekText = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return weekText[weekDay];
+    },
+    getMonthText(date) {
+      const month = new Date(date).getMonth();
+      const mlist = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      return mlist[month];
     },
   },
 };
@@ -267,8 +285,17 @@ export default {
   background-size: cover;
   background-position: center;
 }
+.hero-body{
+  // align-items:flex-start!important;
+}
 .main-info, .hero-head{
   background-color: rgba(0, 0, 0, 0.5);
+}
+.city-name{
+  // margin-bottom: 20vh;
+  background-color: rgba(0, 0, 0, 0.0);
+  position: relative;
+  top: -20vh;
 }
 .bottom-info{
   background-color: white;
