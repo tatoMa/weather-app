@@ -127,7 +127,7 @@
                   </div>
                   <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
                   <div>
-                    {{Math.round(daily.min_temp)}}°C -
+                    <!-- {{Math.round(daily.min_temp)}}°C - -->
                     {{Math.round(daily.max_temp)}}°C
                   </div>
                 </div>
@@ -279,6 +279,9 @@ export default {
   width: 30px;
   height: auto;
   margin: 6px 0px;
+}
+.input:active, .input:focus{
+  border-color: #3d3d3d;
 }
 .hero {
   background-color: rgba(88, 88, 88, 0.61);
