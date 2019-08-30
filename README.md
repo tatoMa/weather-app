@@ -13,6 +13,9 @@
 * [x] fetch city image from Pexels API
 * [x] css for city image
 * [x] css for weather
+* [x] add celsius and fahrenheit switcher
+* [x] style switch
+* [x] adily weather info detail popup page frame
 * [ ] css for animation and transition
 * [ ] add sidebar
 * [ ] add router
