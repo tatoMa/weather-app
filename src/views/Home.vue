@@ -60,25 +60,41 @@
             <p class="title is-4">
               {{result.title}}
             </p>
+            <div class="temp-toggle">
+              <div class="field">
+                <b-switch
+                v-model="tempUnit"
+                type="is-info"
+                >
+                    {{tempUnit? '°C' : '°F'}}
+                </b-switch>
+              </div>
+            </div>
           </div><!-- location and weather info for top section -->
 
           <!-- search input and button -->
           <div class="field has-addons">
-            <div class="control is-expanded">
+            <div
+            class="control is-expanded"
+            :class="loadingSearchCity ? 'is-loading' : ''"
+            >
               <input
               class="input"
               type="text"
               placeholder="search a place"
               v-model="searchText"
               @keyup.enter="searchCity"
-              :disabled="loadingSearchCity ? true : false"
               >
             </div>
-            <div class="control">
+            <div
+            class="control"
+            :class="loadingSearchCity ? 'is-loading' : ''"
+            >
               <a
               class="button is-info"
               @click="searchCity"
-              :class="loadingSearchCity ? 'is-loading' : ''">
+              :disabled="loadingSearchCity ? true : false"
+              >
                 Search
               </a>
             </div>
@@ -98,7 +114,12 @@
           <!-- weather info from result -->
           <div v-if="result.consolidated_weather" class="main-info">
             <p class="title is-1">
-              {{Math.round(result.consolidated_weather[0].the_temp)}}°C
+              {{
+                tempUnit?
+                Math.round(result.consolidated_weather[0].the_temp)
+                : (Math.round(result.consolidated_weather[0].the_temp * 9/5 + 32))
+              }}
+              {{tempUnit? '°C' : '°F'}}
             </p>
             <p class="subtitle is-3">
               {{result.consolidated_weather[0].weather_state_name}}
@@ -120,6 +141,7 @@
               v-for="daily in result.consolidated_weather"
               :key="daily.applicable_date.id"
               class="daily-info"
+              @click="isCardModalActive = true"
               >
                 <div class="has-text-black-bis subtitle is-6">
                   <div class="has-text-weight-semibold">
@@ -128,18 +150,43 @@
                   <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
                   <div>
                     <!-- {{Math.round(daily.min_temp)}}°C - -->
-                    {{Math.round(daily.max_temp)}}°C
+                    <!-- {{Math.round(daily.max_temp)}}°C -->
+                    {{
+                      tempUnit?
+                      Math.round(daily.max_temp)
+                      : (Math.round(daily.max_temp * 9/5 + 32))
+                    }}
+                    {{tempUnit? '°C' : '°F'}}
                   </div>
                 </div>
               </li>
             </ul>
           </div><!-- 6 days of weather forcast -->
 
+          <!-- card for daily weather info -->
+          <b-modal :active.sync="isCardModalActive" :width="640" scroll="keep">
+            <div class="card">
+                <div class="card-content">
+
+                      <div class="menu si-dark">
+                        <p class="menu-label">
+                          Transactions
+                        </p>
+                        <ul class="menu-list">
+                          <li><a>Payments</a></li>
+                          <li><a>Transfers</a></li>
+                          <li><a>Balance</a></li>
+                        </ul>
+                      </div>
+
+                </div>
+            </div>
+          </b-modal><!-- card for daily weather info -->
+
         </nav>
       </div><!-- footer section -->
 
     </section>
-
     <!-- {{imageCityURL.original}} -->
     <!-- <img v-if="imageCityURL" :src="imageCityURL.large2x" alt=""> -->
     {{searchText}}
@@ -195,6 +242,8 @@ export default {
   },
   data() {
     return {
+      isCardModalActive: false,
+      tempUnit: true,
       result: {},
       search: {},
       searchText: '',
@@ -203,7 +252,7 @@ export default {
       loadingSearchCity: '',
     };
   },
-  mounted() {
+  created() {
     this.weatherDataFromCity({ woeid: 1103816 });
     this.cityImageFetchByPexels('melbourne');
     // this.searchCity();
@@ -220,7 +269,9 @@ export default {
           }));
     },
     weatherDataFromCity(WeatherDataFromCity) {
+      this.loadingSearchCity = true;
       this.search = {};
+      this.searchText = '';
       console.log(WeatherDataFromCity);
       const { woeid, title } = WeatherDataFromCity;
       fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${woeid}/`)
@@ -229,10 +280,11 @@ export default {
             console.log(res);
             this.result = res;
             this.cityImageFetchByPexels(title);
+            this.loadingSearchCity = false;
           }));
     },
     cityImageFetchByPexels(locationName) {
-      fetch(`https://api.pexels.com/v1/search?query=${locationName}+query&per_page=1`, {
+      fetch(`https://api.pexels.com/v1/search?query=${locationName}+query&per_page=10`, {
         headers: {
           Authorization: 'Bearer ' + '563492ad6f91700001000001caff54fbc73040acae2be7c403e3e8d8',
           // 'Content-Type': 'application/json',
@@ -247,11 +299,13 @@ export default {
             }
             // Examine the text in the response
             response.json().then((data) => {
-              console.log('src');
-              console.log(data.photos[0].src);
-              if (data.photos[0].src) {
-                this.imageCityURL = data.photos[0].src;
-                console.log(data.photos[0].src);
+              if (data.photos.length !== 0) {
+                const randomPics = Math.floor(Math.random() * data.photos.length);
+                console.log(data.photos);
+                if (data.photos[randomPics].src) {
+                  this.imageCityURL = data.photos[randomPics].src;
+                  console.log(data.photos[randomPics].src);
+                }
               }
             });
           },
@@ -300,12 +354,18 @@ export default {
   position: relative;
   top: -20vh;
 }
+.temp-toggle{
+  position: absolute;
+  right: 1.5vh;
+  top: 2.5vh;
+}
 .bottom-info{
   background-color: white;
   cursor: pointer;
 }
 .daily-info{
   padding: 12px 0px;
+  color:rgb(30, 40, 50);
 }
 .daily-info:hover{
   background-color: rgb(211, 211, 211);
