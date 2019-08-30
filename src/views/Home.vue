@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 <template>
   <div>
 
@@ -19,7 +20,7 @@
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
-                <p class="title is-4">weather</p>
+                <p class="title is-4">Beauty Weather</p>
               </a>
               <span class="navbar-burger burger" data-target="navbarMenuHeroB">
                 <span></span>
@@ -147,7 +148,8 @@
               v-for="daily in weatherDataByCitySelected.consolidated_weather"
               :key="daily.applicable_date.id"
               class="daily-info"
-              @click="dailyWeatherDetailPopup = true"
+              @click="dailyWeatherDetailPopup = true;
+              selectedDayWeatherDetail = daily"
               >
                 <div class="has-text-black-bis subtitle is-7">
                   <div class="has-text-weight-semibold">
@@ -169,29 +171,30 @@
             </ul>
           </div><!-- 6 days of weather forcast -->
 
-          <!-- card for daily weather info -->
-          <b-modal :active.sync="dailyWeatherDetailPopup" :width="640" scroll="keep">
-            <div class="card">
-                <div class="card-content">
-
-                      <div class="menu si-dark">
-                        <p class="menu-label">
-                          Transactions
-                        </p>
-                        <ul class="menu-list">
-                          <li><a>Payments</a></li>
-                          <li><a>Transfers</a></li>
-                          <li><a>Balance</a></li>
-                        </ul>
-                      </div>
-
-                </div>
-            </div>
-          </b-modal><!-- card for daily weather info -->
-
         </nav>
       </div><!-- footer section -->
 
+      <!-- card for daily weather info -->
+          <b-modal :active.sync="dailyWeatherDetailPopup" :width="640" scroll="keep">
+            <div class="card is-white daily-details">
+              <b-menu>
+                <b-menu-list label="Daily Details">
+                    <b-menu-item :label="`${selectedDayWeatherDetail.applicable_date}`"></b-menu-item>
+                    <b-menu-item :label="`Status: ${selectedDayWeatherDetail.weather_state_name}`"></b-menu-item>
+                    <b-menu-item :label="`Min Temp: ${Math.round(selectedDayWeatherDetail.min_temp).toString()}°C`"></b-menu-item>
+                    <b-menu-item :label="`Max Temp: ${Math.round(selectedDayWeatherDetail.max_temp).toString()}°C`"></b-menu-item>
+                    <b-menu-item :label="`Humidity: ${Math.round(selectedDayWeatherDetail.humidity).toString()}`"></b-menu-item>
+                    <b-menu-item :label="`Wind Direction: ${Math.round(selectedDayWeatherDetail.wind_direction).toString()}`"></b-menu-item>
+                    <b-menu-item :label="`Wind Speed: ${Math.round(selectedDayWeatherDetail.wind_speed).toString()}`"></b-menu-item>
+                    <b-menu-item :label="`Air Pressure: ${Math.round(selectedDayWeatherDetail.air_pressure).toString()}`"></b-menu-item>
+                    <b-menu-item :label="`Updated: ${selectedDayWeatherDetail.created}`"></b-menu-item>
+                </b-menu-list>
+                <b-menu-list label="Actions">
+                    <b-menu-item label="CLOSE" @click="dailyWeatherDetailPopup = false;"></b-menu-item>
+                </b-menu-list>
+              </b-menu>
+            </div>
+          </b-modal><!-- card for daily weather info -->
     </section>
     <!-- {{imageCityURL.original}} -->
     <!-- <img v-if="imageCityURL" :src="imageCityURL.large2x" alt=""> -->
@@ -256,6 +259,7 @@ export default {
       imageCityURL: '',
       loadingCityList: false,
       loadingWeatherInfo: false,
+      selectedDayWeatherDetail: {},
     };
   },
   created() {
@@ -278,7 +282,6 @@ export default {
       this.loadingWeatherInfo = true;
       this.cityListBySearch = {};
       this.cityNameByInput = '';
-      console.log(WeatherDataFromCity);
       const { woeid } = WeatherDataFromCity;
       fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${woeid}/`)
         .then(data => data.json()
@@ -335,6 +338,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.burger{
+  color: white;
+}
 .icon{
   width: 25px;
   height: auto;
@@ -377,7 +383,7 @@ export default {
   cursor: pointer;
 }
 .daily-info{
-  padding: 12px 0px;
+  padding: 10px 0px;
   color:rgb(30, 40, 50);
 }
 .daily-info:first-child {
@@ -391,5 +397,9 @@ export default {
   &:hover{
     background-color: rgb(211, 211, 211);
   }
+}
+.daily-details{
+  padding-top: 14px;
+  padding-bottom: 5px;
 }
 </style>
