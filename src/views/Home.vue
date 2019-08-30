@@ -1,6 +1,11 @@
 <template>
   <div>
-    <section class="hero is-fullheight is-dark" v-bind:style="{ backgroundImage: 'url(' + imageCityURL.large2x + ')' }">
+    <section
+    class="hero is-fullheight is-dark"
+    v-bind:style="{ backgroundImage: 'url(' + imageCityURL.large2x + ')' }"
+    >
+
+      <!-- navbar -->
       <div class="hero-head">
         <nav class="navbar">
           <div class="container">
@@ -37,42 +42,42 @@
             </div>
           </div>
         </nav>
-      </div>
+      </div><!-- navbar -->
+
       <!-- body section -->
       <div class="hero-body">
         <div class="container has-text-centered">
+
+          <!-- search input and button -->
           <div class="field has-addons">
-          <div class="control is-expanded">
-            <input
-            class="input"
-            type="text"
-            placeholder="search a place"
-            v-model="searchText"
-            @keyup.enter="searchCity"
-            >
-          </div>
-          <div class="control">
-            <a class="button is-info" @click="searchCity">
-              Search
-            </a>
-          </div>
-        </div>
-        <nav class="panel" v-if="search">
-          <a class="panel-block"
-          v-for="city in search"
-          :key="city.woeid"
-          v-on:click="weatherDataFromCity(city)"
-          >
-            {{city.title}}
-          </a>
-        </nav>
-        <!-- <div v-if="search">
-          <div v-for="city in search" :key="city.woeid">
-            <div v-on:click="weatherDataFromCity(city)">
-              {{city.title}}
+            <div class="control is-expanded">
+              <input
+              class="input"
+              type="text"
+              placeholder="search a place"
+              v-model="searchText"
+              @keyup.enter="searchCity"
+              >
             </div>
-          </div>
-        </div> -->
+            <div class="control">
+              <a class="button is-info" @click="searchCity">
+                Search
+              </a>
+            </div>
+          </div><!-- search input and button -->
+
+          <!-- search result panel -->
+          <nav class="panel" v-if="search">
+            <a class="panel-block"
+            v-for="city in search"
+            :key="city.woeid"
+            v-on:click="weatherDataFromCity(city)"
+            >
+              {{city.title}}
+            </a>
+          </nav><!-- search result panel -->
+
+          <!-- weather info from result -->
           <div v-if="result.consolidated_weather" class="main-info">
             <p class="title is-2">
               {{Math.round(result.consolidated_weather[0].the_temp)}}°C
@@ -80,12 +85,16 @@
             <p class="subtitle is-4">
               {{result.title}}
             </p>
-          </div>
+          </div><!-- weather info from result -->
+
         </div>
-      </div>
+      </div><!-- body section -->
+
       <!-- footer section -->
       <div class="hero-foot bottom-info">
         <nav class="tabs is-boxed is-fullwidth">
+
+          <!-- 6 days of weather forcast -->
           <div class="container">
             <ul>
               <!-- <li class="is-active"> -->
@@ -96,7 +105,7 @@
               >
                 <div class="has-text-black-bis subtitle is-6">
                   <div>
-                    {{new Date(daily.applicable_date).getDate()}}
+                    {{getWeekDay(daily.applicable_date)}}
                   </div>
                   <img class="icon" :src="`https://www.metaweather.com/static/img/weather/${daily.weather_state_abbr}.svg`" alt="">
                   <div>
@@ -106,10 +115,13 @@
                 </div>
               </li>
             </ul>
-          </div>
+          </div><!-- 6 days of weather forcast -->
+
         </nav>
-      </div>
+      </div><!-- footer section -->
+
     </section>
+
     <!-- {{imageCityURL.original}} -->
     <!-- <img v-if="imageCityURL" :src="imageCityURL.large2x" alt=""> -->
     {{searchText}}
@@ -178,8 +190,8 @@ export default {
     // this.searchCity();
   },
   methods: {
-    async searchCity() {
-      await fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/search/?query=${this.searchText}`)
+    searchCity() {
+      fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/search/?query=${this.searchText}`)
         .then(data => data.json()
           .then((res) => {
             console.log(res);
@@ -227,6 +239,19 @@ export default {
           console.log('Fetch Error :-S', err);
         });
     },
+    getWeekDay(day) {
+      const weekDay = new Date(day).getDay();
+      const week = new Array(7);
+      week[0] = 'Sunday';
+      week[1] = 'Monday';
+      week[2] = 'Tuesday';
+      week[3] = 'Wednesday';
+      week[4] = 'Thursday';
+      week[5] = 'Friday';
+      week[6] = 'Saturday';
+
+      return week[weekDay];
+    },
   },
 };
 </script>
@@ -240,7 +265,7 @@ export default {
 .hero {
   background-color: rgba(88, 88, 88, 0.61);
   background-size: cover;
-  background-position: bottom;
+  background-position: center;
 }
 .main-info, .hero-head{
   background-color: rgba(0, 0, 0, 0.5);
