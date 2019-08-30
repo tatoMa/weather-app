@@ -240,15 +240,15 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import { createHash } from 'crypto';
-import Weather from '@/components/Weather.vue';
+// // @ is an alias to /src
+// import { createHash } from 'crypto';
+// import Weather from '@/components/Weather.vue';
 
 export default {
   name: 'home',
-  components: {
-    Weather,
-  },
+  // components: {
+  //   Weather,
+  // },
   data() {
     return {
       dailyWeatherDetailPopup: false,
