@@ -1,5 +1,11 @@
 <template>
   <div>
+
+    <!-- full screen loading spinner -->
+    <div :closable="false">
+      <b-loading is-full-page :active.sync="loadingWeatherInfo" :can-cancel="true"></b-loading>
+    </div><!-- full screen loading spinner -->
+
     <section
     class="hero is-fullheight is-dark"
     v-bind:style="{
@@ -143,7 +149,7 @@
               class="daily-info"
               @click="dailyWeatherDetailPopup = true"
               >
-                <div class="has-text-black-bis subtitle is-6">
+                <div class="has-text-black-bis subtitle is-7">
                   <div class="has-text-weight-semibold">
                     {{getWeekDayText(daily.applicable_date).slice(0, 3)}}
                   </div>
@@ -249,6 +255,7 @@ export default {
       cityNameByInput: '',
       imageCityURL: '',
       loadingCityList: false,
+      loadingWeatherInfo: false,
     };
   },
   created() {
@@ -268,7 +275,7 @@ export default {
           }));
     },
     weatherDataFromCity(WeatherDataFromCity) {
-      this.loadingCityList = true;
+      this.loadingWeatherInfo = true;
       this.cityListBySearch = {};
       this.cityNameByInput = '';
       console.log(WeatherDataFromCity);
@@ -279,7 +286,7 @@ export default {
             console.log(res);
             this.weatherDataByCitySelected = res;
             this.cityImageFetchByPexels(res.title);
-            this.loadingCityList = false;
+            this.loadingWeatherInfo = false;
           }));
     },
     cityImageFetchByPexels(locationName) {
@@ -329,7 +336,7 @@ export default {
 
 <style lang="scss" scoped>
 .icon{
-  width: 30px;
+  width: 25px;
   height: auto;
   margin: 6px 0px;
 }
@@ -339,7 +346,8 @@ export default {
 .hero {
   background-color: rgba(88, 88, 88, 0.61);
   background-size: cover;
-  background-position: center;
+  // background-position: center;
+  background-position: 50% 70%;
 }
 .hero-body{
   // align-items:flex-start!important;
@@ -357,7 +365,7 @@ export default {
   position: relative;
   top: -20vh;
   color: #FFFFFF;
-  text-shadow: 3px 2px 0 rgb(90, 90, 90);
+  text-shadow: 1.5px 1px 0 rgba(63, 63, 63, 0.5);
 }
 .temp-toggle{
   position: absolute;
