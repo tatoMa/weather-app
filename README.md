@@ -16,6 +16,9 @@
 * [x] add celsius and fahrenheit switcher
 * [x] style switch
 * [x] adily weather info detail popup page frame
+* [ ] restructure the main page into seperate components
+* [ ] add slide or carousel for multi-city weather
+* [ ] add storage to store the places saved by user
 * [ ] css for animation and transition
 * [ ] add sidebar
 * [ ] add router
