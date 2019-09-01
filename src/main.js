@@ -1,10 +1,12 @@
 import Vue from 'vue';
+import VueCarousel from 'vue-carousel';
 import Buefy from 'buefy';
 import App from './App.vue';
 import router from './router';
 // import store from './store';
 import 'buefy/dist/buefy.css';
 
+Vue.use(VueCarousel);
 Vue.use(Buefy);
 
 Vue.config.productionTip = false;

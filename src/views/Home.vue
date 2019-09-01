@@ -1,7 +1,26 @@
 /* eslint-disable max-len */
 <template>
   <div>
-
+    <carousel>
+  <slide>
+    Slide 1 Content
+  </slide>
+  <slide>
+    Slide 2 Content
+  </slide>
+  <slide>
+    Slide 2 Content
+  </slide>
+  <slide>
+    Slide 2 Content
+  </slide>
+  <slide>
+    Slide 2 Content
+  </slide>
+  <slide>
+    Slide 2 Content
+  </slide>
+</carousel>
     <!-- full screen loading spinner -->
     <div :closable="false">
       <b-loading is-full-page :active.sync="loadingWeatherInfo" :can-cancel="true"></b-loading>
@@ -243,12 +262,15 @@
 // // @ is an alias to /src
 // import { createHash } from 'crypto';
 // import Weather from '@/components/Weather.vue';
+import { Carousel, Slide } from 'vue-carousel';
+
 
 export default {
   name: 'home',
-  // components: {
-  //   Weather,
-  // },
+  components: {
+    Carousel,
+    Slide,
+  },
   data() {
     return {
       dailyWeatherDetailPopup: false,
