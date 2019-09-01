@@ -23,4 +23,9 @@ body {
   }
   text-align: center;
 }
+
+.VueCarousel-pagination{
+  position: absolute !important;
+  bottom: 98px;
+}
 </style>
