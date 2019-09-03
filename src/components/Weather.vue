@@ -279,7 +279,7 @@ export default {
       //   });
     },
     cityImageFetchByPexels(locationName) {
-      fetch(`https://api.pexels.com/v1/search?query=${locationName}+query&per_page=10`, {
+      fetch(`https://api.pexels.com/v1/search?query=${locationName}+query&per_page=5`, {
         headers: {
           Authorization: 'Bearer ' + '563492ad6f91700001000001caff54fbc73040acae2be7c403e3e8d8',
           // 'Content-Type': 'application/json',
