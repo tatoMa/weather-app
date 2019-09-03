@@ -20,16 +20,16 @@
             :class="burgerBar ? 'is-active' : ''"
             >
               <div class="navbar-end">
-                <a class="navbar-item is-active">
+                <a class="navbar-item is-active" @click="onGoTOPage(0)">
                   {{cityList[0].title}}
                 </a>
-                <a class="navbar-item">
+                <a class="navbar-item" @click="onGoTOPage(1)">
                   {{cityList[1].title}}
                 </a>
-                <a class="navbar-item">
+                <a class="navbar-item" @click="onGoTOPage(2)">
                   {{cityList[2].title}}
                 </a>
-                <a class="navbar-item">
+                <a class="navbar-item" @click="onGoTOPage(3)">
                   {{cityList[3].title}}
                 </a>
                 <!-- <span class="navbar-item">
@@ -62,6 +62,9 @@ export default {
     toggleBurgerBar() {
       this.burgerBar = !this.burgerBar;
       console.log('toggled');
+    },
+    onGoTOPage(page) {
+      this.$emit('finished', page);
     },
   },
 };

@@ -1,7 +1,12 @@
 <template>
   <div id="app">
-    <navbar :cityList="cityList"/>
-    <router-view :cityList="cityList"/>
+    <navbar
+    :cityList="cityList"
+    @finished="finished"
+    />
+    <router-view
+    :cityList="cityList"
+    :goToPage="goToPage"/>
   </div>
 </template>
 
@@ -20,7 +25,14 @@ export default {
         { woeid: 2151330, title: 'Beijing' },
         { woeid: 2459115, title: 'New York' },
       ],
+      goToPage: null,
     };
+  },
+  methods: {
+    finished(page) {
+      console.log('page', page);
+      this.goToPage = page;
+    },
   },
 };
 </script>

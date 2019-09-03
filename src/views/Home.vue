@@ -1,5 +1,6 @@
 <template>
-  <carousel :perPage=1>
+  <carousel :perPage=1 ref="carousel">
+    {{goToPage}}
     <slide v-for="(city, index) in cityList" :key="city.weoid">
       <Weather :city="city" :index="index"/>
     </slide>
@@ -16,11 +17,24 @@ export default {
     cityList: {
       type: Array,
     },
+    goToPage: {
+
+    },
   },
   components: {
     Weather,
     Carousel,
     Slide,
-  }
+  },
+  watch: {
+    goToPage() {
+      this.onGoToPage(this.goToPage);
+    },
+  },
+  methods: {
+    onGoToPage(page) {
+      this.$refs.carousel.goToPage(page);
+    },
+  },
 };
 </script>
