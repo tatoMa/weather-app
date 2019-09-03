@@ -1,6 +1,5 @@
 <template>
   <carousel :perPage=1 ref="carousel">
-    {{goToPage}}
     <slide v-for="(city, index) in cityList" :key="city.weoid">
       <Weather :city="city" :index="index"/>
     </slide>

@@ -64,6 +64,7 @@ export default {
       console.log('toggled');
     },
     onGoTOPage(page) {
+      this.burgerBar = false;
       this.$emit('finished', page);
     },
   },
