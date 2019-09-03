@@ -4,10 +4,11 @@
     <!-- full screen loading spinner -->
     <div :closable="false">
       <b-loading is-full-page :active.sync="loadingWeatherInfo" :can-cancel="true"></b-loading>
-    </div><!-- full screen loading spinner -->
+    </div>
+    <!-- full screen loading spinner -->
 
     <section
-    class="hero is-fullheight is-dark"
+    class="hero is-fullheight-with-navbar is-dark "
     v-bind:style="{
       // eslint-disable-next-line max-len
       backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 10%,rgba(0,0,0,0) 100%), url(' + imageCityURL.large2x + ')' }"
@@ -15,41 +16,6 @@
 
       <!-- navbar -->
       <div class="hero-head">
-        <nav class="navbar">
-          <div class="container">
-            <div class="navbar-brand">
-              <a class="navbar-item">
-                <p class="title is-4">Beauty Weather</p>
-              </a>
-              <span class="navbar-burger burger" data-target="navbarMenuHeroB">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </div>
-            <div id="navbarMenuHeroB" class="navbar-menu">
-              <div class="navbar-end">
-                <a class="navbar-item is-active">
-                  Home
-                </a>
-                <a class="navbar-item">
-                  Examples
-                </a>
-                <a class="navbar-item">
-                  Documentation
-                </a>
-                <!-- <span class="navbar-item">
-                  <a class="button is-info is-inverted">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Download</span>
-                  </a>
-                </span> -->
-              </div>
-            </div>
-          </div>
-        </nav>
       </div><!-- navbar -->
 
       <!-- body section -->
@@ -242,15 +208,23 @@
 // // @ is an alias to /src
 // import { createHash } from 'crypto';
 // import Weather from '@/components/Weather.vue';
-import { Carousel, Slide } from 'vue-carousel';
+// import { Carousel, Slide } from 'vue-carousel';
 
 
 export default {
-  name: 'home',
-  components: {
-    Carousel,
-    Slide,
+  props: {
+    city: {
+      type: Object,
+    },
+    index: {
+      type: Number,
+    },
   },
+  name: 'home',
+  // components: {
+  //   Carousel,
+  //   Slide,
+  // },
   data() {
     return {
       dailyWeatherDetailPopup: false,
@@ -265,7 +239,7 @@ export default {
     };
   },
   created() {
-    this.weatherDataFromCity({ woeid: 1105779 });
+    this.weatherDataFromCity(this.city);
     // this.cityImageFetchByPexels('melbourne');
     // this.searchCity();
   },
@@ -281,7 +255,9 @@ export default {
           }));
     },
     weatherDataFromCity(WeatherDataFromCity) {
-      this.loadingWeatherInfo = true;
+      if (this.index === 0) {
+        this.loadingWeatherInfo = true;
+      }
       this.cityListBySearch = {};
       this.cityNameByInput = '';
       const { woeid } = WeatherDataFromCity;
@@ -291,8 +267,16 @@ export default {
             console.log(res);
             this.weatherDataByCitySelected = res;
             this.cityImageFetchByPexels(res.title);
-            this.loadingWeatherInfo = false;
+            if (this.index === 0) {
+              this.loadingWeatherInfo = false;
+            }
           }));
+
+      // Promise.all(urls.map(url => fetch(url)))
+      //   .then(resp => Promise.all(resp.map(r => r.text())))
+      //   .then((result) => {
+      //     // ...
+      //   });
     },
     cityImageFetchByPexels(locationName) {
       fetch(`https://api.pexels.com/v1/search?query=${locationName}+query&per_page=10`, {
