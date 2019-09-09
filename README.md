@@ -14,8 +14,9 @@
 * [x] css for city image
 * [x] css for weather
 * [x] add celsius and fahrenheit switcher
-* [x] style switch
+* [x] main page css update
 * [x] adily weather info detail popup page frame
+* [ ] re-design the popup info about daily weather details
 * [ ] restructure the main page into seperate components
 * [ ] add slide or carousel for multi-city weather
 * [ ] add storage to store the places saved by user
