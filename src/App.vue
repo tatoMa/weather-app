@@ -42,6 +42,7 @@ $color-snow-cloud: #CCC;
 $color-cloud: #00A0B0;
 
 body {
+  height: 100vh;
   background-color: $color-main-background;
   font-family: 'Poppins', sans-serif;
   color: $color-snow-cloud;
