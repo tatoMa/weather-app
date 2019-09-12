@@ -42,7 +42,11 @@ $color-snow-cloud: #CCC;
 $color-cloud: #00A0B0;
 
 body {
-  height: 100vh;
+  @supports (-webkit-appearance:none) {
+    .os-android & {
+      min-height: calc(100vh - 56px);
+    }
+  }
   background-color: $color-main-background;
   font-family: 'Poppins', sans-serif;
   color: $color-snow-cloud;
